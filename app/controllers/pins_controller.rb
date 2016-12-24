@@ -1,5 +1,6 @@
 class PinsController < ApplicationController
-	before_action :find_pin, only: [:show, :edit, :update, :destroy, :upvote, :downvote]
+
+	before_action :find_pin, only: [:show, :edit, :update, :destroy, :upvote, :downvote], except: :mypins
 	before_action :authenticate_user!, except: [:index, :show]
   
   def index
@@ -22,6 +23,11 @@ class PinsController < ApplicationController
 
   # GET /pins/1/edit
   def edit
+    if @pin.user.email != current_user.email
+      respond_to do |format|  
+        format.html { redirect_to @pin, alert: 'You are not authorised to edit this content' }
+      end  
+    end
   end
 
   # POST /pins
